@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'maven-publish'
 }
 
 android {
@@ -10,8 +9,8 @@ android {
     defaultConfig {
         minSdk 21
         targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        versionCode VERSION_CODE.toInteger()
+        versionName VERSION_NAME
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -32,30 +31,6 @@ android {
     }
 }
 
-afterEvaluate {
-    publishing {
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/brahmamp/AndroidLibraryTest")
-                credentials {
-                    username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                    password = project.findProperty("gpr.key") ?: System.getenv("PASSWORD")
-                }
-            }
-        }
-        publications {
-            release(MavenPublication) {
-                from components.release
-                groupId = "$GROUP"
-                artifactId = "library-release"
-                // Use your configured version outside CI, the SHA of the top commit inside.
-                version = System.env['GITHUB_SHA'] == null ? "$VERSION" : System.env['GITHUB_SHA']
-            }
-        }
-    }
-}
-
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -65,3 +40,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
+
+apply plugin: "com.vanniktech.maven.publish"
